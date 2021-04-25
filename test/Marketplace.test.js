@@ -47,7 +47,7 @@ contract("Marketplace", (accounts) => {
 
             // check for erroneous results
             await marketplace.addProduct("", price, {from: accounts[1]}).should.be.rejected
-            await marketplace.addProduct(name, 0, {from: accounts[1]}).should.be.rejected;
+            await marketplace.addProduct(name, 0, {from: accounts[1]}).should.be.rejected
         })
 
         it("lists products", async() => {
@@ -57,6 +57,30 @@ contract("Marketplace", (accounts) => {
             assert.equal(product.price, price, "price correct")
             assert.equal(product.owner, accounts[1], "owner correct")
             assert.equal(product.forSale, true, "forSale correct")
+        })
+
+        it("sells products", async() => {
+            let oldSellerBalance = new web3.utils.BN(await web3.eth.getBalance(accounts[1]))
+            result = await marketplace.buyProduct(productsCount, {from:accounts[2], value: price})
+            var event = result.logs[0].args
+
+            // check for successfull results
+            assert.equal(event.id.toNumber(), productsCount, "id correct")
+            assert.equal(event.name, name, "name correct")
+            assert.equal(event.price, price, "price correct")
+            assert.equal(event.owner, accounts[2], "owner correct")
+            assert.equal(event.forSale, false, "forSale correct")
+
+            // check for seller to have received funds
+            let newSellerBalance = new web3.utils.BN(await web3.eth.getBalance(accounts[1]))
+            let _price = new web3.utils.BN(price)
+            let expectedSellerBalance = oldSellerBalance.add(_price)
+
+            assert.equal(newSellerBalance.toString(), expectedSellerBalance.toString())
+
+            // check for erroneous results
+            await marketplace.buyProduct(99, {from:accounts[2], value:price}).should.be.rejected
+            await marketplace.buyProduct(productsCount, {from:accounts[2], value:price/2}).should.be.rejected
         })
     })
 })

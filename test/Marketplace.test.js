@@ -20,7 +20,7 @@ contract("Marketplace", (accounts) => {
 
         it("has a name", async () => {              // assert that the name is correct
             let name = await marketplace.name()
-            assert.equal(name, "Mr C3drik Marketplace")
+            assert.equal(name, "MrC3drik Marketplace")
         })
     })
 
@@ -50,7 +50,7 @@ contract("Marketplace", (accounts) => {
             await marketplace.addProduct(name, 0, {from: accounts[1]}).should.be.rejected
         })
 
-        it("lists products", async() => {
+        it("lists products", async() => {           // assert that products get listed correctly
             var product = await marketplace.products(productsCount)
             assert.equal(product.id.toNumber(), productsCount, "id correct")
             assert.equal(product.name, name, "name correct")
@@ -59,7 +59,7 @@ contract("Marketplace", (accounts) => {
             assert.equal(product.forSale, true, "forSale correct")
         })
 
-        it("sells products", async() => {
+        it("sells products", async() => {           // assert that products get sold correctly
             let oldSellerBalance = new web3.utils.BN(await web3.eth.getBalance(accounts[1]))
             result = await marketplace.buyProduct(productsCount, {from:accounts[2], value: price})
             var event = result.logs[0].args

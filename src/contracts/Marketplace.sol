@@ -30,7 +30,7 @@ contract Marketplace {
     );
 
     constructor() public {
-        name = "Mr C3drik Marketplace";
+        name = "MrC3drik Marketplace";
     }
 
     function addProduct(string memory _name, uint _price) public {
